@@ -1,34 +1,33 @@
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from pyspectator.processor import Cpu
 
-def customCallback(client,userdata,message):
-    print("callback came...")
+import config
+
+
+def customCallback(client, userdata, message):
+    print("Message received:")
     print(message.payload)
-    if message.payload==b'{\n  "temperature"\n}':
-        msg=cpu.temperature
-        topic = "general/inbound"
-        myMQTTClient.publish(topic, msg, 0) 
+    if message.payload == b'{\n  "temperature"\n}':
+        msg = str(cpu.temperature)
+        myMQTTClient.publish(config.TOPIC, msg, 0)
 
 
-myMQTTClient = AWSIoTMQTTClient('333')
+myMQTTClient = AWSIoTMQTTClient(config.CLIENT_ID)
 cpu = Cpu(monitoring_latency=1)
 
-
-myMQTTClient.configureEndpoint("endpoint",8883)
-myMQTTClient.configureCredentials("./AmazonRootCA1 (2).pem", "./333.private.key","./333.cert.pem")
+myMQTTClient.configureEndpoint(config.ENDPOINT, config.PORT)
+myMQTTClient.configureCredentials(config.ROOT_CA, config.PRIVATE_KEY, config.CERTIFICATE)
 
 myMQTTClient.connect()
-print("ok")
+print("Connected")
 
+myMQTTClient.subscribe(config.TOPIC, 1, customCallback)
 
-myMQTTClient.subscribe("general/inbound", 1, customCallback)
+print("Waiting for messages. Press Enter to stop...")
+input()
 
-print('waiting for the callback. Click to continue...')
-
-y=input()
-myMQTTClient.unsubscribe("general/inbound")
-print("Client unsubscribed") 
-
+myMQTTClient.unsubscribe(config.TOPIC)
+print("Client unsubscribed")
 
 myMQTTClient.disconnect()
-print("Client Disconnected")
+print("Client disconnected")

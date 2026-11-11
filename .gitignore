@@ -1,5 +1,16 @@
-.pem
-.key
-/333.cert.pem
-/333.private.key
-/AmazonRootCA1 (2).pem
+# AWS IoT certificates and keys - never commit them
+*.pem
+*.key
+*.crt
+*.pem.crt
+*.private.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

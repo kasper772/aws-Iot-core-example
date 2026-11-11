@@ -1,18 +1,16 @@
-from AWSIoTPythonSDK.MQTTLib  import AWSIoTMQTTClient
+from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 
-myMQTTClient=AWSIoTMQTTClient('333')
+import config
 
-
-myMQTTClient.configureEndpoint("endpoint",8883)
-myMQTTClient.configureCredentials("./AmazonRootCA1 (2).pem", "./333.private.key","./333.cert.pem")
+myMQTTClient = AWSIoTMQTTClient(config.CLIENT_ID)
+myMQTTClient.configureEndpoint(config.ENDPOINT, config.PORT)
+myMQTTClient.configureCredentials(config.ROOT_CA, config.PRIVATE_KEY, config.CERTIFICATE)
 
 myMQTTClient.connect()
-print("ok")
-# topic =
-msg="Sample data from the device"
-topic = "general/inbound"
-myMQTTClient.publish(topic, msg, 0)  
-print("Message Sent")
+print("Connected")
 
+msg = "Sample data from the device"
+myMQTTClient.publish(config.TOPIC, msg, 0)
+print("Message sent")
 
 myMQTTClient.disconnect()
